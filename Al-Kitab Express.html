@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Kitab Express | Livraria Islâmica</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        ebDark: '#0b0e14',
+                        ebCard: '#131822',
+                        ebHeader: '#1a202c',
+                        ebGreen: '#00e676',
+                        ebGreenHover: '#00c853',
+                        ebGold: '#ffc107',
+                        ebGoldHover: '#ffb300',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom scrollbar for betting-style dynamic layout */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0e14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1a202c;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ffc107;
+        }
+        .live-badge {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+        .bet-card-shadow {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-ebDark text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-ebGold selection:text-black">
+
+    <!-- TOPBAR INFORMATIVA & RECLAMAÇÕES (Sempre visível no topo) -->
+    <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-black border-b border-slate-800 text-xs py-2 px-4 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5 bg-red-600/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded text-[11px] font-bold">
+                    <span class="w-2 h-2 rounded-full bg-red-500 live-badge"></span> APOIO 24/7
+                </span>
+                <span class="text-slate-300 hidden sm:inline">Central de Atendimento & Reclamações:</span>
+                <a href="tel:864655888" class="font-extrabold text-ebGold hover:text-white flex items-center gap-1 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20 transition">
+                    <i class="fa-solid fa-phone text-xs"></i> 864655888
+                </a>
+            </div>
+            <div class="flex items-center gap-4 text-[11px] text-slate-400 font-medium">
+                <span class="flex items-center gap-1 text-ebGreen"><i class="fa-solid fa-bolt"></i> Entrega Rápida</span>
+                <span class="hidden md:inline">|</span>
+                <span class="hidden md:inline">Moeda: <strong class="text-white">MT (Meticais)</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CABEÇALHO PRINCIPAL DA PLATAFORMA -->
+    <header class="bg-ebHeader border-b border-slate-800 sticky top-9 z-40 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+            
+            <!-- LOGO DA PLATAFORMA -->
+            <div class="flex items-center gap-3">
+                <a href="#" class="flex items-center gap-2 group">
+                    <div class="bg-gradient-to-br from-ebGold to-amber-600 text-black p-2.5 rounded-xl font-black text-xl shadow-lg group-hover:scale-105 transition transform">
+                        <i class="fa-solid fa-book-quran"></i>
+                    </div>
+                    <div class="leading-none">
+                        <span class="text-xl font-black tracking-tight text-white flex items-center gap-1">
+                            AL-KITAB <span class="bg-ebGold text-black text-xs font-black px-1.5 py-0.5 rounded tracking-widest uppercase">EXPRESS</span>
+                        </span>
+                        <span class="text-[10px] font-semibold text-ebGreen uppercase tracking-widest block mt-0.5">Livraria Islâmica #1</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- CAMPO DE PESQUISA CENTRAL (CENTRO DE PESQUISA) -->
+            <div class="flex-1 max-w-xl relative hidden md:block">
+                <div class="relative">
+                    <input type="text" id="searchInput" onkeyup="filtrarLivros()" 
+                           placeholder="Pesquisar por título, autor, Hadith, Alcorão..." 
+                           class="w-full bg-ebDark text-white placeholder-slate-500 pl-10 pr-10 py-2.5 rounded-xl border border-slate-700 focus:border-ebGold focus:outline-none text-xs transition shadow-inner">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+                    <button onclick="filtrarLivros()" class="absolute right-2 top-1.5 bg-ebGold text-black font-bold text-[10px] px-2.5 py-1 rounded-lg hover:bg-ebGoldHover uppercase">
+                        Buscar
+                    </button>
+                </div>
+            </div>
+
+            <!-- BOTÕES DE AÇÃO / CARRINHO / RECLAMAÇÃO -->
+            <div class="flex items-center gap-3">
+                <a href="https://wa.me/258864655888?text=Ola,%20gostaria%20de%20fazer%20uma%20reclamacao%20ou%20obter%20suporte." 
+                   target="_blank" 
+                   class="bg-emerald-600/20 hover:bg-emerald-600/30 text-ebGreen border border-ebGreen/40 font-bold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span class="hidden lg:inline">Reclamações:</span>
+                    <span class="font-extrabold">864655888</span>
+                </a>
+
+                <!-- Ícone do Carrinho -->
+                <button onclick="toggleCarrinho()" class="relative bg-ebDark p-2.5 rounded-xl border border-slate-700 text-ebGold hover:border-ebGold transition">
+                    <i class="fa-solid fa-cart-shopping text-sm"></i>
+                    <span id="carrinhoCount" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-ebHeader">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SEARCH BAR MOBILE -->
+        <div class="px-4 pb-3 md:hidden">
+            <div class="relative">
+                <input type="text" id="searchInputMobile" onkeyup="filtrarLivrosMobile()" 
+                       placeholder="Buscar por livro, Hadith, oração..." 
+                       class="w-full bg-ebDark text-white placeholder-slate-500 pl-9 pr-4 py-2 rounded-lg border border-slate-700 focus:border-ebGold text-xs">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- BANNER DE DESTAQUE SUPER OFERTAS -->
+    <section class="max-w-7xl mx-auto px-4 mt-4">
+        <div class="relative bg-gradient-to-r from-slate-900 via-ebHeader to-emerald-950 rounded-2xl p-6 md:p-8 border border-slate-800 overflow-hidden shadow-2xl">
+            <!-- Background Decorative Glows -->
+            <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-ebGold/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-10 -top-10 w-60 h-60 bg-ebGreen/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-3 text-center md:text-left max-w-xl">
+                    <div class="inline-flex items-center gap-2 bg-ebGold/10 border border-ebGold/30 text-ebGold text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+                        <i class="fa-solid fa-fire text-ebGold"></i> Oferta Especial de Conhecimento
+                    </div>
+                    <h2 class="text-2xl md:text-4xl font-black text-white leading-tight uppercase tracking-tight">
+                        Super Ofertas Islâmicas <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-ebGold via-amber-300 to-ebGreen">
+                            Todos de 250 MT a 500 MT
+                        </span>
+                    </h2>
+                    <p class="text-slate-300 text-xs md:text-sm">
+                        Adquira livros autênticos sobre Alcorão, Hadiths, Súplicas e Biografias com entrega rápida em Moçambique e pagamento facilitado via M-Pesa.
+                    </p>
+                    
+                    <div class="pt-2 flex flex-wrap justify-center md:justify-start gap-3">
+                        <button onclick="scrollToCat('todos')" class="bg-ebGold hover:bg-ebGoldHover text-black text-xs font-extrabold px-6 py-3 rounded-xl shadow-lg transition flex items-center gap-2 uppercase tracking-wider">
+                            <i class="fa-solid fa-bolt"></i> Ver Catálogo Completo
+                        </button>
+                        <a href="https://wa.me/258864655888" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold px-4 py-3 rounded-xl transition flex items-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-ebGreen text-base"></i> Suporte WhatsApp
+                        </a>
+                    </div>
+                </div>
+
+                <!-- CARDS DE HIGHLIGHT LATERAL -->
+                <div class="w-full md:w-auto grid grid-cols-2 gap-3 min-w-[280px]">
+                    <div class="bg-ebCard p-3 rounded-xl border border-slate-800 text-center flex flex-col items-center justify-center">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase">Super Preço</span>
+                        <span class="text-xs font-extrabold text-ebGold mt-1">Fortaleza do Muçulmano</span>
+                        <span class="text-lg font-black text-ebGreen mt-1">250 MT</span>
+                        <button onclick="adicionarAoCarrinho('Fortaleza do Muçulmano', 250)" class="mt-2 bg-ebGreen text-black font-bold text-[10px] w-full py-1 rounded uppercase">Comprar</button>
+                    </div>
+                    <div class="bg-ebCard p-3 rounded-xl border border-slate-800 text-center flex flex-col items-center justify-center">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase">Mais Procurado</span>
+                        <span class="text-xs font-extrabold text-ebGold mt-1">40 Hadiths Nawawi</span>
+                        <span class="text-lg font-black text-ebGreen mt-1">450 MT</span>
+                        <button onclick="adicionarAoCarrinho('Os 40 Hadiths de An-Nawawi', 450)" class="mt-2 bg-ebGold text-black font-bold text-[10px] w-full py-1 rounded uppercase">Comprar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NAVEGAÇÃO POR ABAS / CATEGORIAS (LAYOUT ESTILO TABS DENSAS) -->
+    <nav class="max-w-7xl mx-auto px-4 mt-6">
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none text-xs font-bold uppercase tracking-wider">
+            <button onclick="filtrarCategoria('todos')" id="tab-todos" class="tab-btn bg-ebGold text-black px-4 py-2.5 rounded-xl whitespace-nowrap shadow-md flex items-center gap-2">
+                <i class="fa-solid fa-border-all"></i> Todos os Livros
+            </button>
+            <button onclick="filtrarCategoria('alcorao')" id="tab-alcorao" class="tab-btn bg-ebCard hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2.5 rounded-xl whitespace-nowrap flex items-center gap-2">
+                <i class="fa-solid fa-book-quran text-ebGold"></i> Alcorão & Tafsir
+            </button>
+            <button onclick="filtrarCategoria('hadith')" id="tab-hadith" class="tab-btn bg-ebCard hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2.5 rounded-xl whitespace-nowrap flex items-center gap-2">
+                <i class="fa-solid fa-scroll text-ebGold"></i> Hadiths & Sunnah
+            </button>
+            <button onclick="filtrarCategoria('suplicas')" id="tab-suplicas" class="tab-btn bg-ebCard hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2.5 rounded-xl whitespace-nowrap flex items-center gap-2">
+                <i class="fa-solid fa-hands-praying text-ebGold"></i> Súplicas & Oração
+            </button>
+            <button onclick="filtrarCategoria('historia')" id="tab-historia" class="tab-btn bg-ebCard hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2.5 rounded-xl whitespace-nowrap flex items-center gap-2">
+                <i class="fa-solid fa-landmark text-ebGold"></i> Histórias dos Profetas
+            </button>
+            <button onclick="filtrarCategoria('iniciantes')" id="tab-iniciantes" class="tab-btn bg-ebCard hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2.5 rounded-xl whitespace-nowrap flex items-center gap-2">
+                <i class="fa-solid fa-seedling text-ebGreen"></i> Para Iniciantes
+            </button>
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL: CATALOGO DE LIVROS EM GRID DINÂMICO -->
+    <main class="max-w-7xl mx-auto px-4 my-6 flex-1 w-full">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-black text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                <span class="w-2 h-4 bg-ebGold rounded-sm"></span> Livros Disponíveis em Stock
+            </h3>
+            <span id="contadorLivros" class="text-xs text-slate-400 font-bold bg-ebCard px-2.5 py-1 rounded border border-slate-800">
+                8 Livros Encontrados
+            </span>
+        </div>
+
+        <!-- GRID DE LIVROS COM CARDS NO ESTILO MODERNO -->
+        <div id="livrosGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <!-- Os livros são renderizados via JavaScript para simular dinamismo -->
+        </div>
+    </main>
+
+    <!-- PAINEL FIXO / BANNER DE RECLAMAÇÕES DE ALTO IMPACTO -->
+    <section class="max-w-7xl mx-auto px-4 mb-10">
+        <div class="bg-gradient-to-r from-emerald-900/60 via-ebCard to-slate-900 border border-emerald-500/30 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-ebGreen text-2xl shrink-0">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <div>
+                    <h4 class="text-lg font-black text-white">Precisa de Ajuda ou Tem Alguma Reclamação?</h4>
+                    <p class="text-xs text-slate-300 mt-0.5">O nosso apoio ao cliente responde rapidamente a dúvidas de entregas, stock e pagamentos M-Pesa.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+                <a href="tel:864655888" class="bg-ebGold hover:bg-ebGoldHover text-black font-extrabold text-xs px-5 py-3 rounded-xl transition flex items-center gap-2 uppercase tracking-wider">
+                    <i class="fa-solid fa-phone"></i> Ligar: 864655888
+                </a>
+                <a href="https://wa.me/258864655888" target="_blank" class="bg-ebGreen hover:bg-ebGreenHover text-black font-extrabold text-xs px-5 py-3 rounded-xl transition flex items-center gap-2 uppercase tracking-wider">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL / DRAWER DO CARRINHO DE COMPRAS -->
+    <div id="carrinhoModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-end">
+        <div class="bg-ebCard w-full max-w-md h-full p-6 flex flex-col justify-between border-l border-slate-800 shadow-2xl">
+            <div>
+                <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                    <h3 class="font-black text-lg text-white flex items-center gap-2">
+                        <i class="fa-solid fa-bag-shopping text-ebGold"></i> Seu Carrinho
+                    </h3>
+                    <button onclick="toggleCarrinho()" class="text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+
+                <div id="carrinhoItens" class="py-4 space-y-3 max-h-[60vh] overflow-y-auto">
+                    <!-- Itens do carrinho aparecem aqui -->
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-4 space-y-4">
+                <div class="flex justify-between items-center text-sm font-bold">
+                    <span class="text-slate-400">Total a Pagar:</span>
+                    <span id="carrinhoTotal" class="text-xl font-black text-ebGreen">0 MT</span>
+                </div>
+                
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs text-slate-400 space-y-1">
+                    <p class="font-bold text-white flex items-center gap-1">
+                        <i class="fa-solid fa-mobile-screen text-ebGold"></i> Pagamento via M-Pesa / e-Mola
+                    </p>
+                    <p>Ao finalizar, seu pedido será enviado diretamente ao WhatsApp para confirmação de entrega.</p>
+                </div>
+
+                <button onclick="finalizarPedidoWhatsApp()" class="w-full bg-ebGreen hover:bg-ebGreenHover text-black font-black py-3 rounded-xl uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> Finalizar Pedido no WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RODAPÉ DA PLATAFORMA -->
+    <footer class="bg-ebHeader border-t border-slate-800 py-10 text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <div class="bg-ebGold text-black p-1.5 rounded-lg font-bold">
+                        <i class="fa-solid fa-book-quran text-sm"></i>
+                    </div>
+                    <span class="font-black text-white text-base">AL-KITAB EXPRESS</span>
+                </div>
+                <p class="text-slate-400 leading-relaxed text-[11px]">
+                    Sua livraria islâmica online de alta performance em Moçambique. Livros autênticos com preços entre 250 MT e 500 MT.
+                </p>
+            </div>
+
+            <div>
+                <h5 class="font-bold text-white uppercase tracking-wider mb-3 text-xs">Categorias</h5>
+                <ul class="space-y-2 text-[11px]">
+                    <li><a href="#" onclick="filtrarCategoria('alcorao')" class="hover:text-ebGold transition">Alcorão Sagrado</a></li>
+                    <li><a href="#" onclick="filtrarCategoria('hadith')" class="hover:text-ebGold transition">Hadiths de An-Nawawi</a></li>
+                    <li><a href="#" onclick="filtrarCategoria('suplicas')" class="hover:text-ebGold transition">Fortaleza do Muçulmano</a></li>
+                    <li><a href="#" onclick="filtrarCategoria('historia')" class="hover:text-ebGold transition">Histórias dos Profetas</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h5 class="font-bold text-white uppercase tracking-wider mb-3 text-xs">Métodos de Pagamento</h5>
+                <div class="flex flex-wrap gap-2">
+                    <span class="bg-ebDark px-2.5 py-1 rounded border border-slate-800 font-bold text-slate-300">M-Pesa</span>
+                    <span class="bg-ebDark px-2.5 py-1 rounded border border-slate-800 font-bold text-slate-300">e-Mola</span>
+                    <span class="bg-ebDark px-2.5 py-1 rounded border border-slate-800 font-bold text-slate-300">Cash no Levantamento</span>
+                </div>
+            </div>
+
+            <div class="bg-ebDark p-4 rounded-xl border border-slate-800 space-y-2">
+                <h5 class="font-black text-white uppercase tracking-wider text-xs flex items-center gap-1.5 text-ebGold">
+                    <i class="fa-solid fa-headset"></i> Canal de Reclamações
+                </h5>
+                <p class="text-[11px] text-slate-400">Teve algum problema com encomenda ou pagamento?</p>
+                <a href="tel:864655888" class="text-sm font-black text-ebGreen block hover:underline">
+                    📞 864655888
+                </a>
+                <span class="text-[10px] text-slate-500 block">Atendimento Segunda a Domingo</span>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 mt-8 pt-4 border-t border-slate-800/60 text-center text-[10px] text-slate-500">
+            © 2026 Al-Kitab Express — Plataforma de Venda de Livros Islâmicos. Todos os direitos reservados.
+        </div>
+    </footer>
+
+    <!-- LOGICA JAVASCRIPT -->
+    <script>
+        // BASE DE DADOS DOS LIVROS (Preços estritamente entre 250 MT e 500 MT)
+        const livrosBD = [
+            {
+                id: 1,
+                titulo: "Fortaleza do Muçulmano (Hisn al-Muslim)",
+                autor: "Said bin Ali Al-Qahtani",
+                categoria: "suplicas",
+                preco: 250,
+                avaliacao: 5.0,
+                avaliacoesCount: 310,
+                tag: "Menor Preço",
+                corTag: "bg-ebGreen text-black",
+                imagemIcon: "📖",
+                detalhe: "Formato de bolso com súplicas diárias do Alcorão e Sunnah."
+            },
+            {
+                id: 2,
+                titulo: "Guia Prático da Oração e Ablução",
+                autor: "Dr. Muhammad Al-Jibaly",
+                categoria: "suplicas",
+                preco: 400,
+                avaliacao: 4.9,
+                avaliacoesCount: 88,
+                tag: "Com Ilustrações",
+                corTag: "bg-ebGold text-black",
+                imagemIcon: "🕌",
+                detalhe: "Aprenda a realizar a oração e ablução corretamente."
+            },
+            {
+                id: 3,
+                titulo: "Os 40 Hadiths de An-Nawawi",
+                autor: "Imam An-Nawawi",
+                categoria: "hadith",
+                preco: 450,
+                avaliacao: 5.0,
+                avaliacoesCount: 92,
+                tag: "Mais Vendido",
+                corTag: "bg-red-500 text-white",
+                imagemIcon: "📜",
+                detalhe: "Fundamentos indispensáveis da fé e da conduta islâmica."
+            },
+            {
+                id: 4,
+                titulo: "O Básico do Islã para Iniciantes",
+                autor: "Centro Islâmico",
+                categoria: "iniciantes",
+                preco: 250,
+                avaliacao: 4.8,
+                avaliacoesCount: 115,
+                tag: "Iniciantes",
+                corTag: "bg-ebGreen text-black",
+                imagemIcon: "🌱",
+                detalhe: "Resumo essencial do Tawheed, Pilares da Fé e Prática."
+            },
+            {
+                id: 5,
+                titulo: "Histórias Curtas dos Profetas",
+                autor: "Ibn Kathir (Adaptado)",
+                categoria: "historia",
+                preco: 450,
+                avaliacao: 4.9,
+                avaliacoesCount: 67,
+                tag: "Recomendado",
+                corTag: "bg-ebGold text-black",
+                imagemIcon: "🏛️",
+                detalhe: "As lições de vida dos profetas explicadas com clareza."
+            },
+            {
+                id: 6,
+                titulo: "Excelência dos Bons Modos (Akhlaq)",
+                autor: "Imam Al-Bukhari",
+                categoria: "hadith",
+                preco: 300,
+                avaliacao: 4.7,
+                avaliacoesCount: 52,
+                tag: "Conduta",
+                corTag: "bg-slate-700 text-white",
+                imagemIcon: "✨",
+                detalhe: "Ensinamentos sobre o respeito à família e vizinhos."
+            },
+            {
+                id: 7,
+                titulo: "Tafsir Juz Amma (Resumido)",
+                autor: "Shaykh Ibn Uthaimin",
+                categoria: "alcorao",
+                preco: 500,
+                avaliacao: 5.0,
+                avaliacoesCount: 45,
+                tag: "Estudo Alcorão",
+                corTag: "bg-amber-600 text-white",
+                imagemIcon: "📗",
+                detalhe: "Explicação dos últimos capítulos do Sagrado Alcorão."
+            },
+            {
+                id: 8,
+                titulo: "As Mulheres Exemplares no Islã",
+                autor: "Ahmad Khalil",
+                categoria: "historia",
+                preco: 350,
+                avaliacao: 4.9,
+                avaliacoesCount: 49,
+                tag: "Biografia",
+                corTag: "bg-purple-600 text-white",
+                imagemIcon: "👑",
+                detalhe: "Histórias inspiradoras das companheiras do Profeta."
+            }
+        ];
+
+        let carrinho = [];
+        let categoriaAtual = 'todos';
+
+        // RENDERIZAR OS LIVROS NO GRID
+        function renderizarLivros(lista) {
+            const grid = document.getElementById('livrosGrid');
+            const contador = document.getElementById('contadorLivros');
+            grid.innerHTML = '';
+
+            contador.innerText = `${lista.length} Livros Encontrados`;
+
+            if (lista.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full bg-ebCard border border-slate-800 rounded-2xl p-10 text-center text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-3xl text-ebGold mb-2"></i>
+                        <p class="font-bold">Nenhum livro encontrado para esta pesquisa.</p>
+                        <p class="text-xs text-slate-500 mt-1">Tente pesquisar por outro termo ou categoria.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            lista.forEach(livro => {
+                const card = document.createElement('div');
+                card.className = "bg-ebCard rounded-2xl border border-slate-800/80 overflow-hidden flex flex-col justify-between hover:border-ebGold/50 transition duration-200 bet-card-shadow group";
+                card.innerHTML = `
+                    <div class="p-4 flex-1 flex flex-col justify-between">
+                        <!-- HEADER DO CARD -->
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="${livro.corTag} text-[9px] font-black uppercase px-2 py-0.5 rounded tracking-wider">
+                                    ${livro.tag}
+                                </span>
+                                <div class="flex items-center gap-1 text-ebGold text-xs font-bold">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span>${livro.avaliacao}</span>
+                                    <span class="text-slate-500 text-[10px]">(${livro.avaliacoesCount})</span>
+                                </div>
+                            </div>
+
+                            <!-- CAPA VISUAL -->
+                            <div class="h-32 bg-slate-900/90 rounded-xl border border-slate-800 flex flex-col items-center justify-center p-2 text-center group-hover:border-slate-700 transition">
+                                <span class="text-3xl mb-1">${livro.imagemIcon}</span>
+                                <span class="text-[11px] font-bold text-slate-300 line-clamp-1">${livro.titulo}</span>
+                            </div>
+
+                            <!-- TITULO E AUTOR -->
+                            <h4 class="font-black text-white text-xs mt-3 line-clamp-1 group-hover:text-ebGold transition">
+                                ${livro.titulo}
+                            </h4>
+                            <p class="text-[10px] text-slate-400 mt-0.5">Autor: ${livro.autor}</p>
+                            <p class="text-[10px] text-slate-500 mt-2 line-clamp-2">${livro.detalhe}</p>
+                        </div>
+                    </div>
+
+                    <!-- FOOTER DO CARD DE COMPRA -->
+                    <div class="bg-slate-900/90 border-t border-slate-800/80 p-3 flex items-center justify-between gap-2">
+                        <div>
+                            <span class="text-[9px] text-slate-400 block uppercase font-bold">Preço Fixo</span>
+                            <span class="text-base font-black text-ebGreen tracking-tight">${livro.preco} MT</span>
+                        </div>
+                        
+                        <div class="flex gap-1.5">
+                            <button onclick="adicionarAoCarrinho('${livro.titulo}', ${livro.preco})" class="bg-ebGold hover:bg-ebGoldHover text-black font-black text-xs px-3.5 py-2 rounded-xl uppercase tracking-wider flex items-center gap-1 transition active:scale-95 shadow-md">
+                                <i class="fa-solid fa-cart-plus"></i> COMPRAR AGORA
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // FILTRAR POR PESQUISA EM TEMPO REAL
+        function filtrarLivros() {
+            const termo = document.getElementById('searchInput').value.toLowerCase();
+            const filtrados = livrosBD.filter(l => 
+                l.titulo.toLowerCase().includes(termo) || 
+                l.autor.toLowerCase().includes(termo) ||
+                l.detalhe.toLowerCase().includes(termo)
+            );
+            renderizarLivros(filtrados);
+        }
+
+        function filtrarLivrosMobile() {
+            const termo = document.getElementById('searchInputMobile').value.toLowerCase();
+            const filtrados = livrosBD.filter(l => 
+                l.titulo.toLowerCase().includes(termo) || 
+                l.autor.toLowerCase().includes(termo)
+            );
+            renderizarLivros(filtrados);
+        }
+
+        // FILTRAR POR CATEGORIA
+        function filtrarCategoria(cat) {
+            categoriaAtual = cat;
+            
+            // Atualizar botões de abas
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn bg-ebCard hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2.5 rounded-xl whitespace-nowrap flex items-center gap-2";
+            });
+            
+            const btnAtivo = document.getElementById(`tab-${cat}`);
+            if(btnAtivo) {
+                btnAtivo.className = "tab-btn bg-ebGold text-black px-4 py-2.5 rounded-xl whitespace-nowrap shadow-md flex items-center gap-2 font-black";
+            }
+
+            if(cat === 'todos') {
+                renderizarLivros(livrosBD);
+            } else {
+                const filtrados = livrosBD.filter(l => l.categoria === cat);
+                renderizarLivros(filtrados);
+            }
+        }
+
+        // CARRINHO DE COMPRAS
+        function adicionarAoCarrinho(titulo, preco) {
+            carrinho.push({ titulo, preco });
+            atualizarCarrinho();
+            toggleCarrinho(true);
+        }
+
+        function atualizarCarrinho() {
+            document.getElementById('carrinhoCount').innerText = carrinho.length;
+            const container = document.getElementById('carrinhoItens');
+            const totalEl = document.getElementById('carrinhoTotal');
+            
+            container.innerHTML = '';
+            let total = 0;
+
+            if(carrinho.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">Seu carrinho está vazio.</p>`;
+                totalEl.innerText = '0 MT';
+                return;
+            }
+
+            carrinho.forEach((item, idx) => {
+                total += item.preco;
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs";
+                div.innerHTML = `
+                    <div>
+                        <p class="font-bold text-white">${item.titulo}</p>
+                        <p class="text-ebGreen font-black">${item.preco} MT</p>
+                    </div>
+                    <button onclick="removerDoCarrinho(${idx})" class="text-red-400 hover:text-red-300">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+
+            totalEl.innerText = `${total} MT`;
+        }
+
+        function removerDoCarrinho(index) {
+            carrinho.splice(index, 1);
+            atualizarCarrinho();
+        }
+
+        function toggleCarrinho(abrir = false) {
+            const modal = document.getElementById('carrinhoModal');
+            if(abrir) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.toggle('hidden');
+            }
+        }
+
+        function finalizarPedidoWhatsApp() {
+            if(carrinho.length === 0) {
+                alert('Adicione pelo menos um livro ao carrinho para continuar.');
+                return;
+            }
+
+            let texto = "Olá, gostaria de encomendar os seguintes livros na Al-Kitab Express:%0A%0A";
+            let total = 0;
+
+            carrinho.forEach((item, idx) => {
+                texto += `${idx + 1}. *${item.titulo}* - ${item.preco} MT%0A`;
+                total += item.preco;
+            });
+
+            texto += `%0A*Total:* ${total} MT`;
+            texto += `%0A%0AGostaria de efetuar o pagamento via M-Pesa.`;
+
+            window.open(`https://wa.me/258864655888?text=${texto}`, '_blank');
+        }
+
+        function scrollToCat(cat) {
+            filtrarCategoria(cat);
+            window.scrollTo({ top: 450, behavior: 'smooth' });
+        }
+
+        // Inicializar com todos os livros ao carregar
+        window.onload = () => {
+            renderizarLivros(livrosBD);
+        };
+    </script>
+</body>
+</html>
